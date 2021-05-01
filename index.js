@@ -11,8 +11,8 @@ app.use(cors())
 //app.use(bodyParser.json())
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({extended:false});
-app.listen(8000, function(req, res) {
-  console.log("Server is running at port 8000");
+app.listen(4000, function(req, res) {
+  console.log("Server is running at port 4000");
 });
 
 const connection_string = "mongodb://localhost:27017/";
