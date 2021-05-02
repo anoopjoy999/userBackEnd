@@ -15,7 +15,7 @@ app.listen(4000, function(req, res) {
   console.log("Server is running at port 4000");
 });
 
-const connection_string = "mongodb://localhost:27017/";
+const connection_string = "mongodb://localhost/";
 MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,client){
     if(err)throw err;
     console.log("Connected to MongoDB");
