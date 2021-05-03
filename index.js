@@ -15,7 +15,7 @@ app.listen(4000, function(req, res) {
   console.log("Server is running at port 4000");
 });
 
-const connection_string = "mongodb://localhost/";
+const connection_string = "mongodb://localhost:27017/";
 MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,client){
     if(err)throw err;
     console.log("Connected to MongoDB");
@@ -32,18 +32,21 @@ MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,
 
     // Get single user
 app.get('/user/:id', urlencodedParser,verifyToken,function(req, res) {
-    let id=parseInt(req.params.id, 10);
+    //let id=parseInt(req.params.id, 10);
+    let id = req.params.id;
     console.log(id);
     db.collection("user").findOne({id:id},function(err,result){
         if(err)throw err;
         console.log(result);
         res.send(result);
+        //client.close();
     })
   })
 
   //Delete a new user
 app.delete('/user/:id', urlencodedParser,verifyToken,function(req, res) {
-    let id=parseInt(req.params.id, 10);
+    //let id=parseInt(req.params.id, 10);
+    let id = req.params.id;
     console.log(id);
     db.collection("user").deleteOne({id:id},function(err,result){
         if(err)throw err;
@@ -54,7 +57,7 @@ app.delete('/user/:id', urlencodedParser,verifyToken,function(req, res) {
   })
 
   //Post a new user
-app.post('/user',jsonParser, verifyToken,function(req, res) {
+app.post('/user',jsonParser, function(req, res) {
     let id = req.body.id;
     let username = req.body.username;
     let password = req.body.password;
@@ -75,7 +78,8 @@ app.post('/user',jsonParser, verifyToken,function(req, res) {
 
 //Update a user
 app.patch('/user', jsonParser,verifyToken,function(req, res) {
-    let id=parseInt(req.body.id, 10);
+    //let id=parseInt(req.body.id, 10);
+    let id = req.body.id;
     let username = req.body.username;
     let password = req.body.password;
     let fname = req.body.fname;
@@ -84,6 +88,7 @@ app.patch('/user', jsonParser,verifyToken,function(req, res) {
     const hashResult = hashSSHA(password);
     req.body.password = hashResult.encrypted;
     req.body.salt = hashResult.salt;
+    delete req.body._id;
     db.collection("user").updateOne({id:id},{$set:req.body},function(err,result){
         if(err)throw err;
         console.log("user updated");
@@ -117,8 +122,9 @@ app.patch('/user', jsonParser,verifyToken,function(req, res) {
     if(req.body.id==undefined||req.body.password==undefined){
       res.status(500).send({error:"authentication failed from login"});
     }
-    let id=parseInt(req.body.id, 10);
+    //let id=parseInt(req.body.id, 10);
     let password = req.body.password;
+    let id = req.body.id;
     console.log("id="+id)
     console.log("password="+password)
 
@@ -145,8 +151,10 @@ app.patch('/user', jsonParser,verifyToken,function(req, res) {
         res.status(500).send({error:"login failed"});
        }
       }
+      //client.close();
     })
   })
+
   function hashSSHA(password){
     let salt = crypto.createHash('sha1').update(crypto.randomBytes(8)).digest('base64');
     salt = salt.substring(0,10);
