@@ -19,7 +19,7 @@ const connection_string = "mongodb://localhost:27017/";
 MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,client){
     if(err)throw err;
     console.log("Connected to MongoDB");
-    var db = client.db("blog"); 
+    var db = client.db("users"); 
     //get all the user
     app.get('/user',verifyToken,function(req, res) {
         db.collection("user").find({}).toArray(function(err,result){
