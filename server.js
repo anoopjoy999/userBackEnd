@@ -21,7 +21,7 @@ MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,
     console.log("Connected to MongoDB");
     var db = client.db("users"); 
     //get all the user
-    app.get('/user',verifyToken,function(req, res) {
+    app.get('/user',function(req, res) {
         db.collection("user").find({}).toArray(function(err,result){
             if(err)throw err;
             console.log(result);
@@ -31,20 +31,23 @@ MongoClient.connect(connection_string,{ useUnifiedTopology: true },function(err,
     })
 
     // Get single user
-app.get('/user/:id', urlencodedParser,verifyToken,function(req, res) {
+app.get('/user/:id', urlencodedParser,function(req, res) {
     //let id=parseInt(req.params.id, 10);
     let id = req.params.id;
     console.log(id);
     db.collection("user").findOne({id:id},function(err,result){
         if(err)throw err;
         console.log(result);
+        const salt = result.salt;
+        const pwd = checkhashSSHA(salt, password);
+        result.password=pwd;
         res.send(result);
         //client.close();
     })
   })
 
   //Delete a new user
-app.delete('/user/:id', urlencodedParser,verifyToken,function(req, res) {
+app.delete('/user/:id', urlencodedParser,function(req, res) {
     //let id=parseInt(req.params.id, 10);
     let id = req.params.id;
     console.log(id);
@@ -77,7 +80,7 @@ app.post('/user',jsonParser, function(req, res) {
 
 
 //Update a user
-app.patch('/user', jsonParser,verifyToken,function(req, res) {
+app.patch('/user', jsonParser,function(req, res) {
     //let id=parseInt(req.body.id, 10);
     let id = req.body.id;
     let username = req.body.username;
