@@ -38,9 +38,7 @@ app.get('/user/:id', urlencodedParser,function(req, res) {
     db.collection("user").findOne({id:id},function(err,result){
         if(err)throw err;
         console.log(result);
-        const salt = result.salt;
-        const pwd = checkhashSSHA(salt, password);
-        result.password=pwd;
+        delete result.password;
         res.send(result);
         //client.close();
     })
